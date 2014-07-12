@@ -100,10 +100,10 @@ bottles = [
 def tap_amount(amount):
     print("Zapfe %d cl." % amount)
 
-def search_recipe(cocktail_name):
+def search_recipe(cocktail_index):
     found_recipe = None
     for recipe in recipes:
-        if cocktail_name == recipe['name']:
+        if cocktail_index == recipe['index']:
             found_recipe = recipe
     return found_recipe
 
