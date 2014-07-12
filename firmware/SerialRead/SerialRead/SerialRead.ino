@@ -11,6 +11,7 @@
 
 AccelStepper stepper(AccelStepper::DRIVER, 2, 3); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 int incomingInt = 0;
+int DrinkPositionFaktor = 20;
 void setup()
 {  
    Serial.begin(115200);
@@ -27,9 +28,9 @@ void loop()
                 Serial.print("My Current Position: ");
                 Serial.println(stepper.currentPosition());
                 incomingInt = Serial.parseInt();
-                Serial.print("Moving to: ");
+                Serial.print("Moving to Drink: ");
                 Serial.println(incomingInt);
-                stepper.moveTo(incomingInt);
+                stepper.moveTo(incomingInt * DrinkPositionFaktor);
           }
          stepper.run();
 }
