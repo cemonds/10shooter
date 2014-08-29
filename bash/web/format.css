@@ -1,0 +1,9 @@
+@viewport {
+   width: device-width;
+   user-zoom:fixed;
+}
+a:link { text-decoration:none; font-weight:bold;}
+a:visited { text-decoration:none; font-weight:bold;}
+a:hover { text-decoration:none; font-weight:bold; background-color:#ff0; }
+a:active { text-decoration:none; font-weight:bold;}
+a:focus { text-decoration:none; font-weight:bold;background-color:#ff0; }

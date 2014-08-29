@@ -1,0 +1,11 @@
+Slot#Name
+5#Vodka
+1#Gin
+2#Tequila
+9#Rum
+4#Grenadine
+0#Lemon
+6#Maracuja
+7#Tonic
+8#Jägermeister
+3#Blubber
