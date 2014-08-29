@@ -1,6 +1,7 @@
 recipes = [
     {
         'name': 'Tequila Sunrise',
+        'index': 1,
         'ingredients': [
             {
                 'ingredient': 'Tequila',
@@ -18,6 +19,7 @@ recipes = [
     },
     {
         'name': 'Long Island Iced Tea',
+        'index': 2,
         'ingredients': [
             {
                 'ingredient': 'Tequila',
@@ -94,28 +96,28 @@ bottles = [
     }
 ]
 
-def select_bottle(index):
-    for bottle in bottles:
-        if index == bottle['index']:
-            print("Flasche %d (%s) ausgewaehlt." % (index , bottle['ingredient']) )
 
 def tap_amount(amount):
     print("Zapfe %d cl." % amount)
 
-def search_recipe(cocktail_name):
+def search_recipe(cocktail_index):
     found_recipe = None
     for recipe in recipes:
-        if cocktail_name == recipe['name']:
-            print("Cocktailname: "+cocktail_name)
+        if cocktail_index == recipe['index']:
             found_recipe = recipe
     return found_recipe
 
-def make_cocktail(cocktail_name):
-    found_recipe = search_recipe(cocktail_name)
+def make_cocktail(cocktail_index):
+    found_recipe = search_recipe(cocktail_index)
     if found_recipe != None:
         cocktail_mixen(found_recipe)
     else:
         print("Leider ist der gewuenschte Cocktail nicht verfuegbar")
+
+def select_bottle(index):
+    for bottle in bottles:
+        if index == bottle['index']:
+            print("Flasche %d (%s) ausgewaehlt." % (index , bottle['ingredient']) )
 
 def cocktail_mixen(recipe):
     print("Gerne mixe ich den %s" % recipe['name'])
@@ -127,7 +129,9 @@ def cocktail_mixen(recipe):
                 tap_amount(ingredient['amount'])
                 break
 
+for cocktail in recipes:
+    print(str(cocktail['index']),cocktail['name' ])
+make_cocktail(input("Welche Nummer hat dein Wunschcocktail?: "))
 
-make_cocktail('Long Island Iced Tea')
-#make_cocktail('Planter\'s Punch')
+
 
