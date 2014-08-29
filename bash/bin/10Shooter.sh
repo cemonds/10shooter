@@ -113,6 +113,10 @@ for file in $TREFFER
 					echo "Zutaten:">>$webseite
 				elif [ $(echo $line | cut -d "#" -s -f 1) ]; then
 					echo "</br>"$(echo $line | cut -d "#" -s -f 1)" * 2cl "$(echo $line | cut -d "#" -s -f 2)>>$webseite
+				elif [ $(echo $line | cut -d ":" -f 1) = "Hinterher" ]; then
+					echo "</br>Hinterher:">>$webseite	
+				elif [ $(echo $line | cut -c 1) = "-" ]; then
+					echo "</br> -" $(echo $line | cut -c 3-)>>$webseite
 				fi
 				
 				
