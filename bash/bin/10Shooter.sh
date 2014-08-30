@@ -4,16 +4,16 @@
 
 echo "Beginne Initialisierung!"
 WEBDIR=/var/www/10shooter
-INDEX=~/10shooter/web/html/index.html
+INDEX=~/10shooter/bash/web/html/index.html
 echo "Räume auf..."
 rm $WEBDIR/*.*
-rm ~/10shooter/web/html/*.*
-rm ~/10shooter/*.rezept
+rm ~/10shooter/bash/web/html/*.*
+rm ~/10shooter/bash/*.rezept
 IFS=$'\n'
 ### Liest die geladenen Flaschen ein. Bestückung in ~/10shooter/misc/munition.txt editieren 
 echo "Lade meine Munition..."
 header=0
-for line in $(cat ~/10shooter/misc/munition.txt) 
+for line in $(cat ~/10shooter/bash/misc/munition.txt) 
 	do
 
 		if [ "$header" = "0" ]; then
@@ -34,7 +34,7 @@ for ((i=0; i<=9; i++))
 
 echo "Checke mögliche Operationen... "
 
-REZEPTE=$(find ~/10shooter/misc/rezepte -type f -name "*.rezept")
+REZEPTE=$(find ~/10shooter/bash/misc/rezepte -type f -name "*.rezept")
 
 for file in $REZEPTE
 	do
@@ -63,7 +63,7 @@ for file in $REZEPTE
 			done
 	if [ "$allesda" = "1" ]; then
 		echo "Alles gefunden! Kopiere Rezept..."
-		cp $file ~/10shooter/
+		cp $file ~/10shooter/bash/
 	else
 		echo "Mir fehlt etwas!"
 	fi
@@ -73,10 +73,10 @@ for file in $REZEPTE
 
 echo "#-#-#-#-#-#-#-#  Webseiten #-#-#-#-#-#-#-#" 
 echo "- - - Kopiere format.css - - -"
-cp ~/10shooter/web/format.css $WEBDIR
+cp ~/10shooter/bash/web/format.css $WEBDIR
 echo "- - - Baue und kopiere Index.html - - -"
-cat ~/10shooter/web/head/index.head>>$INDEX
-TREFFER=$(find ~/10shooter -maxdepth 1 -type f -name "*.rezept")
+cat ~/10shooter/bash/web/head/index.head>>$INDEX
+TREFFER=$(find ~/10shooter/bash -maxdepth 1 -type f -name "*.rezept")
 for file in $TREFFER
 	do
 		datei=$(basename $file .rezept)
@@ -89,7 +89,7 @@ for file in $TREFFER
 				fi
 			done
 	done
-cat ~/10shooter/web/foot/index.foot>>$INDEX
+cat ~/10shooter/bash/web/foot/index.foot>>$INDEX
 cp $INDEX $WEBDIR 
 echo "Index.html generiert und kopiert!"
 
@@ -97,9 +97,9 @@ echo "- - - Baue und kopiere Seite der einzelnen Drinks - - -"
 for file in $TREFFER
 	do
 		datei=$(basename $file .rezept)
-		webseite=~/10shooter/web/html/$datei.html
+		webseite=~/10shooter/bash/web/html/$datei.html
 		echo "- - - Ertelle "$datei".html"
-		cat ~/10shooter/web/head/drink.head>>$webseite
+		cat ~/10shooter/bash/web/head/drink.head>>$webseite
 		for line in $(cat $file)
 			do
 				if [ $(echo $line | cut -d ":" -f 1) = "Name"  ]; then
@@ -108,7 +108,7 @@ for file in $TREFFER
 				elif [ $(echo $line | cut -d ":" -f 1) = "Bild"  ]; then
 					pfad=$(echo $line|cut -d ":" -f 2|sed -e 's/^[ \t]*//;s/[ \t]*$//')
 					jpg=$(basename $pfad)
-					cp ~/10shooter/misc/pics/$jpg $WEBDIR/$jpg	
+					cp ~/10shooter/bash/misc/pics/$jpg $WEBDIR/$jpg	
 					echo "<p><img src=\""$jpg"\" alt=\"Bild\"></p>">>$webseite
 					echo "Zutaten:">>$webseite
 				elif [ $(echo $line | cut -d "#" -s -f 1) ]; then
@@ -121,7 +121,7 @@ for file in $TREFFER
 				
 				
 			done
-		cat ~/10shooter/web/foot/drink.foot>>$webseite
+		cat ~/10shooter/bash/web/foot/drink.foot>>$webseite
 		cp $webseite $WEBDIR
 		echo $datei".html erstellt und kopiert"
 	done
