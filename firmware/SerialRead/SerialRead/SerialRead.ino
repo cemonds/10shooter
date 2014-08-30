@@ -16,6 +16,7 @@ int incomingInt = 0;
 int DrinkPositionFaktor = 20*16*5;
 int targetPosition = 0;
 boolean waitingForNewPosition = false;
+boolean readyForNextCommand = false;
 
 Servo tapServo;
 int pos = 0;
@@ -31,10 +32,10 @@ boolean init_pos = false;
 void setup()
 {  
    Serial.begin(115200);
-   stepper.setMaxSpeed(500);
+   stepper.setMaxSpeed(10000);
 //   stepper.setSpeed(0);
    stepper.setCurrentPosition(0);
-   stepper.setAcceleration(50);
+   stepper.setAcceleration(500);
    
    tapServo.attach(4);
    tapServo.write(0);
@@ -51,9 +52,10 @@ void loop()
                  stepper.runSpeed();
                  stepper.setCurrentPosition(0);
                  init_pos=true;
+                 readyForNextCommand = true;
              }else{
 //                 stepper.moveTo(stepper.currentPosition()+1);
-                 stepper.setSpeed(200);
+                 stepper.setSpeed(1000);
                  stepper.runSpeed();
                  init_pos=false;
              }    
@@ -63,10 +65,11 @@ void loop()
 
 
 
-        if (Serial.available() > 0) {
+        if (Serial.available() > 0 && readyForNextCommand) {
                 incomingInt = Serial.read();
                 if(incomingInt == 't') {
                   isTapping = true;
+                  readyForNextCommand = false;
                 } else if(incomingInt == 'n') {
                   int position = Serial.parseInt();
                   Serial.print("Moving to Drink: ");
@@ -74,25 +77,31 @@ void loop()
                   targetPosition = position * DrinkPositionFaktor;
                   stepper.moveTo(targetPosition);
                   waitingForNewPosition = true;
+                  readyForNextCommand = false;
                 } else if(incomingInt == 'c') {
                   Serial.print("My Current Position: ");
                   Serial.println(stepper.currentPosition()/DrinkPositionFaktor);
                 }else if(incomingInt == 'i'){
                   Serial.println("Searching 0 - Position... ");
                   init_pos=false;
+                  readyForNextCommand = false;
                }
           }
           if(targetPosition == stepper.currentPosition() && waitingForNewPosition) {
             Serial.println("Drink reached");
             waitingForNewPosition = false;
+            readyForNextCommand = true;
           }
           if(isTapping) {
             Serial.println("Start tapping");
             tapServo.write(180);              // tell servo to go to position in variable 'pos' 
-            delay(5000);
+            delay(4000);
             Serial.println("Stop tapping");
             tapServo.write(0);
+            Serial.println("Waiting for refill");
+            delay(4000);
             isTapping = false;
+            readyForNextCommand = true;
           }
          stepper.run();
 }

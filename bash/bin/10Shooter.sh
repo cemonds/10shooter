@@ -3,7 +3,8 @@
 # Initialisierung
 
 echo "Beginne Initialisierung!"
-WORKSPACE=~/10shooter/bash
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+WORKSPACE="$BIN_DIR/.."
 WEBDIR=/var/www/10shooter
 INDEX=$WORKSPACE/web/html/index.html
 echo "Räume auf..."
@@ -120,8 +121,12 @@ for file in $TREFFER
 					echo "</br> -" $(echo $line | cut -c 3-)>>$webseite
 				fi
 				
-				
 			done
+		echo '<form action="cgi-bin/control.sh" method="GET" >' >>$webseite
+		cocktailControlCode="n5ttn6tn1t"
+		echo "<input name=\"command\" type=\"hidden\" value=\"$cocktailControlCode\">" >>$webseite
+		echo '<input type="submit" value="Mixen" />' >>$webseite
+		echo '</form>' >>$webseite
 		cat $WORKSPACE/web/foot/drink.foot>>$webseite
 		cp $webseite $WEBDIR
 		echo $datei".html erstellt und kopiert"
