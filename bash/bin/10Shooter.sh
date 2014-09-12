@@ -5,8 +5,12 @@
 echo "Beginne Initialisierung!"
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE="$BIN_DIR/.."
-WEBDIR=/var/www/10shooter
 INDEX=$WORKSPACE/web/html/index.html
+declare WEBDIR=/var/www/10shooter
+if [ ! -e $WEBDIR ]; then
+	mkdir $WEBDIR; 
+fi
+
 echo "Räume auf..."
 rm $WEBDIR/*.*
 rm $WORKSPACE/web/html/*.*
@@ -102,6 +106,7 @@ for file in $TREFFER
 		webseite=$WORKSPACE/web/html/$datei.html
 		echo "- - - Ertelle "$datei".html"
 		cat $WORKSPACE/web/head/drink.head>>$webseite
+		
 		for line in $(cat $file)
 			do
 				if [ $(echo $line | cut -d ":" -f 1) = "Name"  ]; then
@@ -115,6 +120,17 @@ for file in $TREFFER
 					echo "Zutaten:">>$webseite
 				elif [ $(echo $line | cut -d "#" -s -f 1) ]; then
 					echo "</br>"$(echo $line | cut -d "#" -s -f 1)" * 2cl "$(echo $line | cut -d "#" -s -f 2)>>$webseite
+					for ((i=0; i<=9; i++))
+						do
+							if [ ${munition[$i]} = $(echo $line | cut -d "#" -s -f 2) ]; then
+								cocktailControlCode=$cocktailControlCode"n"$i
+								let menge=$(echo $line | cut -d "#" -s -f 1)
+								for ((j=$menge;j>=1;j--))
+									do
+										cocktailControlCode=$cocktailControlCode"t"
+									done	
+							fi
+						done					
 				elif [ $(echo $line | cut -d ":" -f 1) = "Hinterher" ]; then
 					echo "</br>Hinterher:">>$webseite	
 				elif [ $(echo $line | cut -c 1) = "-" ]; then
@@ -123,12 +139,13 @@ for file in $TREFFER
 				
 			done
 		echo '<form action="cgi-bin/control.sh" method="GET" >' >>$webseite
-		cocktailControlCode="n5ttn6tn1t"
+		cocktailControlCode=$cocktailControlCode"f"
 		echo "<input name=\"command\" type=\"hidden\" value=\"$cocktailControlCode\">" >>$webseite
 		echo '<input type="submit" value="Mixen" />' >>$webseite
 		echo '</form>' >>$webseite
 		cat $WORKSPACE/web/foot/drink.foot>>$webseite
 		cp $webseite $WEBDIR
+		cocktailControlCode=""
 		echo $datei".html erstellt und kopiert"
 	done
 
