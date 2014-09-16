@@ -80,6 +80,8 @@ for file in $REZEPTE
 echo "#-#-#-#-#-#-#-#  Webseiten #-#-#-#-#-#-#-#" 
 echo "- - - Kopiere format.css - - -"
 cp $WORKSPACE/web/format.css $WEBDIR
+echo "- - - Kopiere library - - -"
+cp -R $WORKSPACE/web/lib $WEBDIR
 echo "- - - Baue und kopiere Index.html - - -"
 cat $WORKSPACE/web/head/index.head>>$INDEX
 TREFFER=$(find $WORKSPACE -maxdepth 1 -type f -name "*.rezept")
@@ -113,12 +115,12 @@ for file in $TREFFER
 					name=$(echo $line | cut -d ":" -f 2|sed -e 's/^[ \t]*//;s/[ \t]*$//')
 					echo "<ion-header-bar class=\"bar-stable\"><h1 class=\"title\">$name</h1></ion-header-bar>">>$webseite
 					echo "<ion-content>">>$webseite
-					echo "<h2>"$name"</h2>">>$webseite
 				elif [ $(echo $line | cut -d ":" -f 1) = "Bild"  ]; then
 					pfad=$(echo $line|cut -d ":" -f 2|sed -e 's/^[ \t]*//;s/[ \t]*$//')
 					jpg=$(basename $pfad)
-					cp $WORKSPACE/misc/pics/$jpg $WEBDIR/$jpg
-					echo "<p><img src=\"img/$jpg\" alt=\"$name\"></p>">>$webseite
+					mkdir -p $WEBDIR/img
+					cp $WORKSPACE/misc/pics/$jpg $WEBDIR/img/$datei.jpg
+					echo "<p><img src=\"img/$datei.jpg\" alt=\"$name\"></p>">>$webseite
 					echo "<div class=\"list\">">>$webseite
 					echo "<div class=\"item item-divider\">Zutaten</div>">>$webseite
 				elif [ $(echo $line | cut -d "#" -s -f 1) ]; then
