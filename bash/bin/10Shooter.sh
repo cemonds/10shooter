@@ -82,6 +82,8 @@ echo "- - - Kopiere format.css - - -"
 cp $WORKSPACE/web/format.css $WEBDIR
 echo "- - - Kopiere library - - -"
 cp -R $WORKSPACE/web/lib $WEBDIR
+echo "- - - Kopiere cgi-bin - - -"
+cp -R $WORKSPACE/web/cgi-bin $WEBDIR
 echo "- - - Baue und kopiere Index.html - - -"
 cat $WORKSPACE/web/head/index.head>>$INDEX
 TREFFER=$(find $WORKSPACE -maxdepth 1 -type f -name "*.rezept")
@@ -143,7 +145,7 @@ for file in $TREFFER
 				fi
 				
 			done
-		echo '<form action="cgi-bin/control.sh" method="GET" >' >>$webseite
+		echo '<form action="cgi-bin/control.py" method="GET" >' >>$webseite
 		cocktailControlCode=$cocktailControlCode"f"
 		echo "<input name=\"command\" type=\"hidden\" value=\"$cocktailControlCode\">" >>$webseite
 		echo "<button class=\"button button-full button-positive\">Mixen</button>">>$webseite
