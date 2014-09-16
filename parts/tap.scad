@@ -36,13 +36,18 @@ module tap() {
 		translate([-(tap_outer_radius-tap_width/2),0,-4.5])
 			hexagram(10, 5);
 		translate([tap_outer_radius-14,-1,-1])
-			cube([15,2,2]);
+			rotate([0,90,0])
+			translate([-1,1,0])
+				cylinder(h = 15, r =1,$fn=100);
 		translate([-tap_outer_radius,-1,-1])
-			cube([15,2,2]);
+			rotate([0,90,0])
+			translate([-1,1,0])
+				cylinder(h = 15, r =1,$fn=100);
 	}
 }
 
-tap();
+rotate([0,180,0])
+	tap();
 
 module mount() {
 	translate([0,0,mount_height/2])
@@ -63,10 +68,14 @@ module mount() {
 		cube([50,100,20]);
 		translate([0,-18,-10])
 		cube([50,36,20]);
-		translate([-1,-mount_radius-13,-1-mount_height/2])
-			cube([2,15,2]);
-		translate([-1,mount_radius-2,-1-mount_height/2])
-			cube([2,15,2]);
+		translate([-1,-mount_radius+2,-1-mount_height/2])
+			rotate([90,90,0])
+			translate([-1,1,0])
+				cylinder(h = 15, r =1,$fn=100);
+		translate([-1,mount_radius+13,-1-mount_height/2])
+			rotate([90,90,0])
+			translate([-1,1,0])
+				cylinder(h = 15, r =1,$fn=100);
 	}
 }
 
@@ -74,10 +83,11 @@ module leverage_mount() {
 	difference() {
 		cube([15,9.2,13]);
 		translate([5,4.4,0])
-			cube([10,1.4,2.1]);
+			cube([10,1.3,2.1]);
 		translate([5,4.4,13-2.1])
-			cube([10,1.4,2.1]);
+			cube([10,1.3,2.1]);
 	}
 }
 
-mount();
+rotate([0,180,0])
+	mount();
