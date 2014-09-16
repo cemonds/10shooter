@@ -5,8 +5,12 @@
 echo "Beginne Initialisierung!"
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE="$BIN_DIR/.."
-WEBDIR=/var/www/10shooter
 INDEX=$WORKSPACE/web/html/index.html
+declare WEBDIR=/var/www/10shooter
+if [ ! -e $WEBDIR ]; then
+	mkdir $WEBDIR; 
+fi
+
 echo "Räume auf..."
 rm $WEBDIR/*.*
 rm $WORKSPACE/web/html/*.*
@@ -87,7 +91,7 @@ for file in $TREFFER
 				if [ $(echo $line | cut -d ":" -f 1) = "Name"  ]; then
 					name=$(echo $line | cut -d ":" -f 2 | sed -e 's/^[ \t]*//;s/[ \t]*$//')
 					echo "Nehme \"$name\" im Index auf..."
-					echo "</br> <a href="$datei".html>"$name"</a>">>$INDEX
+					echo "<a class=\"item item-thumbnail-left\" href=\"$datei.html\"><img src=\"img/$datei.jpg\"><h2>$name</h2><p>Hier eine Beschreibung</p></a>">>$INDEX
 				fi
 			done
 	done
@@ -100,35 +104,51 @@ for file in $TREFFER
 	do
 		datei=$(basename $file .rezept)
 		webseite=$WORKSPACE/web/html/$datei.html
-		echo "- - - Ertelle "$datei".html"
+		echo "- - - Erstelle "$datei".html"
 		cat $WORKSPACE/web/head/drink.head>>$webseite
+		
 		for line in $(cat $file)
 			do
 				if [ $(echo $line | cut -d ":" -f 1) = "Name"  ]; then
 					name=$(echo $line | cut -d ":" -f 2|sed -e 's/^[ \t]*//;s/[ \t]*$//')
+					echo "<ion-header-bar class=\"bar-stable\"><h1 class=\"title\">$name</h1></ion-header-bar>">>$webseite
+					echo "<ion-content>">>$webseite
 					echo "<h2>"$name"</h2>">>$webseite
 				elif [ $(echo $line | cut -d ":" -f 1) = "Bild"  ]; then
 					pfad=$(echo $line|cut -d ":" -f 2|sed -e 's/^[ \t]*//;s/[ \t]*$//')
 					jpg=$(basename $pfad)
-					cp $WORKSPACE/misc/pics/$jpg $WEBDIR/$jpg	
-					echo "<p><img src=\""$jpg"\" alt=\"Bild\"></p>">>$webseite
-					echo "Zutaten:">>$webseite
+					cp $WORKSPACE/misc/pics/$jpg $WEBDIR/$jpg
+					echo "<p><img src=\"img/$jpg\" alt=\"$name\"></p>">>$webseite
+					echo "<div class=\"list\">">>$webseite
+					echo "<div class=\"item item-divider\">Zutaten</div>">>$webseite
 				elif [ $(echo $line | cut -d "#" -s -f 1) ]; then
-					echo "</br>"$(echo $line | cut -d "#" -s -f 1)" * 2cl "$(echo $line | cut -d "#" -s -f 2)>>$webseite
+					echo "<div class=\"item\">"$(echo $line | cut -d "#" -s -f 1)" * 2cl "$(echo $line | cut -d "#" -s -f 2)"</div>">>$webseite
+					for ((i=0; i<=9; i++))
+						do
+							if [ ${munition[$i]} = $(echo $line | cut -d "#" -s -f 2) ]; then
+								cocktailControlCode=$cocktailControlCode"n"$i
+								let menge=$(echo $line | cut -d "#" -s -f 1)
+								for ((j=$menge;j>=1;j--))
+									do
+										cocktailControlCode=$cocktailControlCode"t"
+									done	
+							fi
+						done					
 				elif [ $(echo $line | cut -d ":" -f 1) = "Hinterher" ]; then
-					echo "</br>Hinterher:">>$webseite	
+					echo "<div class=\"item item-divider\">Hinterher</div>">>$webseite	
 				elif [ $(echo $line | cut -c 1) = "-" ]; then
-					echo "</br> -" $(echo $line | cut -c 3-)>>$webseite
+					echo "<div class=\"item\">"$(echo $line | cut -c 3-)"</div>">>$webseite
 				fi
 				
 			done
 		echo '<form action="cgi-bin/control.sh" method="GET" >' >>$webseite
-		cocktailControlCode="n5ttn6tn1t"
+		cocktailControlCode=$cocktailControlCode"f"
 		echo "<input name=\"command\" type=\"hidden\" value=\"$cocktailControlCode\">" >>$webseite
-		echo '<input type="submit" value="Mixen" />' >>$webseite
+		echo "<button class=\"button button-full button-positive\">Mixen</button>">>$webseite
 		echo '</form>' >>$webseite
 		cat $WORKSPACE/web/foot/drink.foot>>$webseite
 		cp $webseite $WEBDIR
+		cocktailControlCode=""
 		echo $datei".html erstellt und kopiert"
 	done
 
