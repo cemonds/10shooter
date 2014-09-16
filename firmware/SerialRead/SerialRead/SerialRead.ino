@@ -13,11 +13,13 @@
 const int PIN_STEPPER_STEP = 2;
 const int PIN_STEPPER_DIRECTION = 3;
 const int PIN_STEPPER_ENABLE = 6;
+const long ACCELERATION = 1000;
 AccelStepper stepper(AccelStepper::DRIVER, PIN_STEPPER_STEP, PIN_STEPPER_DIRECTION); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 int readByte = 0;
 int nextDrink = 0;
 int currentDrink = 0;
-long DrinkPositionFaktor = 20*16*15;
+const long MICRO_STEPS = 2;
+long DrinkPositionFaktor = 20*MICRO_STEPS*15;
 long targetPosition = 0;
 boolean waitingForNewPosition = false;
 boolean readyForNextCommand = false;
@@ -31,7 +33,7 @@ boolean isTapping = false;
 const int buttonPin = 5;
 int buttonState = 0;
 boolean init_pos = false;
-
+unsigned long lastButtonPress = 0;
 
 void setup()
 {  
@@ -41,7 +43,7 @@ void setup()
    stepper.setMaxSpeed(10000);
 //   stepper.setSpeed(0);
    stepper.setCurrentPosition(0);
-   stepper.setAcceleration(500);
+   stepper.setAcceleration(ACCELERATION);
    stepper.enableOutputs();
    
    tapServo.attach(4);
@@ -52,22 +54,42 @@ void setup()
 
 void loop()
 {
-       if (init_pos == false){
-             buttonState = digitalRead(buttonPin);
-             if (buttonState == HIGH){
-                 stepper.setSpeed(0);
-                 stepper.runSpeed();
-                 stepper.setCurrentPosition(0);
-                 init_pos=true;
-                 readyForNextCommand = true;
-                 stepper.disableOutputs();
-             }else{
-                 stepper.setSpeed(1000);
-                 stepper.runSpeed();
-                 init_pos=false;
-             }    
-       } 
-
+       buttonState = digitalRead(buttonPin);
+       if (init_pos == false && lastButtonPress == 0)
+       {
+           if (buttonState == HIGH)
+           {
+               if(lastButtonPress == 0) 
+               {
+                   stepper.setSpeed(0);
+                   stepper.runSpeed();
+                   stepper.setCurrentPosition(0);
+                   init_pos=true;
+                   readyForNextCommand = true;
+                   stepper.disableOutputs();
+               }
+           } else {
+               stepper.setSpeed(500);
+               stepper.runSpeed();
+               init_pos=false;
+           }
+             
+       } else {
+           if (buttonState == HIGH)
+           {
+               if(lastButtonPress != 0) 
+               {
+                   if(millis() - lastButtonPress > 1000)
+                   {
+                      init_pos = false; 
+                   }
+               } else {
+                   lastButtonPress = millis();
+               }   
+           } else {
+               lastButtonPress = 0;
+           }
+       }
 
 
 
